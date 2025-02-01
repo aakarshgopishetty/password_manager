@@ -7,12 +7,23 @@ def generate_password(length=12):
     password = ''.join(secrets.choice(characters) for _ in range(length))
     return password
 def check_password(password):
-    if (len(password)>= 8 and 
-    re.search(r"[a-z]",password) and 
-    re.search(r"[A-Z]",password) and 
-    re.search(r"[\d]",password) and 
-    re.search(r"[!@#$%^&*(){}|<>,./?-+=`~]")):
-        return "Valid Password"
+    points=0
+    if (len(password)>= 8 ):
+        points+=1
+    if re.search(r"[a-z]",password):
+        points+=1
+    if re.search(r"[A-Z]",password):
+        points+=1 
+    if re.search(r"[\d]",password):
+        points+=1
+    if re.search(r"[!@#$%^&*(){}|<>,./?\-+=`~]", password):
+        points+=1
+    if points!=0:
+        if points==1:return "Needs Improvement"
+        elif points==2:return "Bad"
+        elif points==3:return "Average"
+        elif points==4:return "Good"
+        elif points==5:return "Perfect"
     else: 
         return "Invalid Password"
 
