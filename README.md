@@ -1,2 +1,2 @@
 # password_manager
-Aim:- To create a password manager which suggests trong passwords and stores password.
+Aim:- To create a password manager which checks, suggests strong passwords and stores password.
