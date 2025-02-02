@@ -15,7 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-
+from passwords.views import home,process_data
 urlpatterns = [
+    path('', home, name="home"),  # Home page URL
+    path('process/', process_data, name="process_data"), 
     path('admin/', admin.site.urls),
 ]

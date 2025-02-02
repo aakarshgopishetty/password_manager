@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Manager</title>
+</head>
+<body>
+    <h1>Password Strength Checker and Generator</h1>
+
+    <form method="POST" action="{% url 'process_data' %}">
+        {% csrf_token %}
+        <label for="user_input">Enter a password to check strength:</label>
+        <input type="text" id="user_input" name="user_input">
+        <button type="submit">Check Strength</button>
+    </form>
+
+    <form method="POST" action="{% url 'process_data' %}">
+        {% csrf_token %}
+        <input type="hidden" name="user_input" value="generate">
+        <button type="submit">Generate Password</button>
+    </form>
+
+    {% if generated_password %}
+        <p>Generated Password: {{ generated_password }}</p>
+    {% endif %}
+
+    {% if password_strength %}
+        <p>Password Strength: {{ password_strength }}</p>
+    {% endif %}
+</body>
+</html>

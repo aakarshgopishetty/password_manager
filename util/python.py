@@ -27,5 +27,3 @@ def check_password(password):
     else: 
         return "Invalid Password"
 
-password=str(input("Enter your password: "))
-print(check_password(password))
