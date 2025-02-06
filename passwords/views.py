@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from util.python import generate_password, check_password  # Import the functions
+from util.utils import generate_password, check_password_strength  # Import the functions
 
 def home(request):
     return render(request, "index.html")
@@ -20,7 +20,7 @@ def process_data(request):
 
         # If the user enters a password, check its strength
         elif user_input and user_input != "generate":
-            password_strength = check_password(user_input)
+            password_strength = check_password_strength(user_input)
             user_input = f"Your password strength is: {password_strength}"
 
     return render(request, "index.html", {"user_input": user_input, "generated_password": generated_password, "password_strength": password_strength})
