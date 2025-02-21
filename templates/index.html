@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Password Strength Checker</title>
+    <style>
+        .strength-bar {
+            height: 8px;
+            border-radius: 5px;
+            transition: width 0.3s ease-in-out;
+        }
+        .weak { background-color: red; }
+        .average { background-color: orange; }
+        .good { background-color: yellowgreen; }
+        .strong { background-color: green; }
+    </style>
+</head>
+
+<body class="d-flex justify-content-center align-items-center vh-100 bg-light">
+    <div class="card p-4 shadow" style="max-width: 400px;">
+        <h4 class="text-center" >Password Strength Checker</h4>
+        
+        <label for="password" class="form-label mt-2">Enter a password:</label>
+        <input type="password" id="password" class="form-control" onkeyup="checkStrength()">
+        
+        <div class="progress mt-2">
+            <div id="strength-bar" class="progress-bar strength-bar" style="width: 0%;"></div>
+        </div>
+        <p id="strength-text" class="mt-2 text-center"></p>
+
+        <button onclick="generatePassword()" class="btn btn-primary w-100 mt-3">Generate Secure Password</button>
+        <input type="text" id="generatedPassword" class="form-control mt-2 text-center" readonly>
+    </div>
+
+    <script>
+        function checkStrength() {
+            let password = document.getElementById("password").value;
+            let strengthBar = document.getElementById("strength-bar");
+            let strengthText = document.getElementById("strength-text");
+
+            let points = 0;
+            if (password.length >= 8) points++;
+            if (/[a-z]/.test(password)) points++;
+            if (/[A-Z]/.test(password)) points++;
+            if (/\d/.test(password)) points++;
+            if (/[!@#$%^&*(){}|<>,./?\-+=`~]/.test(password)) points++;
+
+            let strengthLevels = ["Needs Improvement", "Bad", "Average", "Good", "Perfect"];
+            let colors = ["red", "orange", "yellow", "yellowgreen", "green"];
+            
+            strengthBar.style.width = (points * 20) + "%"; // Each level increases width by 20%
+            strengthBar.className = "progress-bar strength-bar"; // Reset classes
+            strengthBar.classList.add(points > 0 ? strengthLevels[points - 1].toLowerCase().replace(" ", "") : "weak");
+            
+            strengthText.textContent = strengthLevels[points - 1] || "Invalid Password";
+        }
+
+        function generatePassword() {
+            let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+";
+            let password = "";
+            for (let i = 0; i < 12; i++) {
+                password += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            document.getElementById("generatedPassword").value = password;
+        }
+    </script>
+</body>
+</html>
