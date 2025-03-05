@@ -15,23 +15,53 @@
         .average { background-color: orange; }
         .good { background-color: yellowgreen; }
         .strong { background-color: green; }
+        .input-group-text { cursor: pointer; }
+        #strength-text {
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        .weak-text { color: red; }
+        .average-text { color: orange; }
+        .good-text { color: yellowgreen; }
+        .strong-text { color: green; }
+        .copy-popup {
+            position: absolute;
+            background: #28a745;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+            top: -40px;
+            right: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
     </style>
 </head>
-
 <body class="d-flex justify-content-center align-items-center vh-100 bg-light">
-    <div class="card p-4 shadow" style="max-width: 400px;">
-        <h4 class="text-center" >Password Strength Checker</h4>
+    <div class="card p-4 shadow position-relative" style="max-width: 400px;">
+        <h4 class="text-center">Password Strength Checker</h4>
         
         <label for="password" class="form-label mt-2">Enter a password:</label>
-        <input type="password" id="password" class="form-control" onkeyup="checkStrength()">
+        <div class="input-group">
+            <input type="password" id="password" class="form-control" onkeyup="checkStrength()">
+            <span class="input-group-text" onclick="togglePassword()">👁</span>
+        </div>
         
         <div class="progress mt-2">
             <div id="strength-bar" class="progress-bar strength-bar" style="width: 0%;"></div>
         </div>
         <p id="strength-text" class="mt-2 text-center"></p>
-
+        
         <button onclick="generatePassword()" class="btn btn-primary w-100 mt-3">Generate Secure Password</button>
-        <input type="text" id="generatedPassword" class="form-control mt-2 text-center" readonly>
+        
+        <div class="input-group mt-2 position-relative">
+            <input type="text" id="generatedPassword" class="form-control text-center" readonly>
+            <button class="btn btn-outline-secondary" type="button" onclick="copyPassword()">📋</button>
+            <span id="copy-popup" class="copy-popup">Copied!</span>
+        </div>
     </div>
 
     <script>
@@ -41,29 +71,65 @@
             let strengthText = document.getElementById("strength-text");
 
             let points = 0;
-            if (password.length >= 8) points++;
+            if (password.length >= 8) points += 2;
+            if (password.length >= 12) points += 2;
             if (/[a-z]/.test(password)) points++;
             if (/[A-Z]/.test(password)) points++;
             if (/\d/.test(password)) points++;
-            if (/[!@#$%^&*(){}|<>,./?\-+=`~]/.test(password)) points++;
+            if (/[!@#$%^&*(){}|<>.,?/\-+=`~]/.test(password)) points += 2;
+            if (/(\w)\1{2,}/.test(password)) points -= 2;
+            if (/123|password|qwerty|admin/.test(password.toLowerCase())) points -= 3;
 
-            let strengthLevels = ["Needs Improvement", "Bad", "Average", "Good", "Perfect"];
-            let colors = ["red", "orange", "yellow", "yellowgreen", "green"];
+            let strengthLevels = ["Needs Improvement", "Weak", "Fair", "Good", "Strong", "Very Strong"];
+            let colors = ["red", "orange", "yellow", "yellowgreen", "green", "darkgreen"];
             
-            strengthBar.style.width = (points * 20) + "%"; // Each level increases width by 20%
-            strengthBar.className = "progress-bar strength-bar"; // Reset classes
-            strengthBar.classList.add(points > 0 ? strengthLevels[points - 1].toLowerCase().replace(" ", "") : "weak");
+            let index = Math.max(0, Math.min(points, strengthLevels.length - 1));
             
-            strengthText.textContent = strengthLevels[points - 1] || "Invalid Password";
+            strengthBar.style.width = (index * 20) + "%";
+            strengthBar.style.backgroundColor = colors[index];
+            
+            strengthText.textContent = strengthLevels[index];
+            strengthText.className = "";
+            strengthText.classList.add(strengthLevels[index].toLowerCase().replace(" ", "-") + "-text");
         }
 
         function generatePassword() {
-            let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+";
+            let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            let lower = "abcdefghijklmnopqrstuvwxyz";
+            let numbers = "0123456789";
+            let special = "!@#$%^&*()_+";
+            let allChars = upper + lower + numbers + special;
+            
             let password = "";
-            for (let i = 0; i < 12; i++) {
-                password += chars.charAt(Math.floor(Math.random() * chars.length));
+            password += upper.charAt(Math.floor(Math.random() * upper.length));
+            password += lower.charAt(Math.floor(Math.random() * lower.length));
+            password += numbers.charAt(Math.floor(Math.random() * numbers.length));
+            password += special.charAt(Math.floor(Math.random() * special.length));
+            
+            for (let i = 4; i < 12; i++) {
+                password += allChars.charAt(Math.floor(Math.random() * allChars.length));
             }
-            document.getElementById("generatedPassword").value = password;
+            
+            document.getElementById("generatedPassword").value = password.split('').sort(() => Math.random() - 0.5).join('');
+        }
+
+        function togglePassword() {
+            let passwordField = document.getElementById("password");
+            passwordField.type = (passwordField.type === "password") ? "text" : "password";
+        }
+
+        function copyPassword() {
+            let passwordField = document.getElementById("generatedPassword");
+            let copyPopup = document.getElementById("copy-popup");
+            passwordField.select();
+            navigator.clipboard.writeText(passwordField.value);
+            
+            copyPopup.style.display = "inline-block";
+            copyPopup.style.opacity = "1";
+            setTimeout(() => {
+                copyPopup.style.opacity = "0";
+                setTimeout(() => { copyPopup.style.display = "none"; }, 300);
+            }, 1500);
         }
     </script>
 </body>
